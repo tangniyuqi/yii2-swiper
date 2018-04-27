@@ -9,26 +9,26 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```bash
-$ php composer.phar require chenkby/yii2-swiper:dev-master
+$ php composer.phar require tangniyuqi/yii2-swiper
 ```
 
 or add
 
 ```
-"chenkby/yii2-swiper": "dev-master"
+"tangniyuqi/yii2-swiper": "*"
 ```
 
 to the `require` section of your `composer.json` file.
 ## Usage
 ```php
-echo \chenkby\swiper\Swiper::widget([
-    'items'=>[
-        Html::img('http://p2.wmpic.me/article/2016/03/07/1457340934_IhOzsopM.jpg'),
-        Html::img('http://p3.wmpic.me/article/2016/03/07/1457340935_xESOHFOa.jpg'),
-        Html::img('http://p3.wmpic.me/article/2016/03/07/1457340935_VoZtYoSk.jpg')
+echo \tangniyuqi\swiper\Swiper::widget([
+    'items' => [
+        Html::img('http://abc.com/1.jpg'),
+        Html::img('http://abc.com/2.jpg'),
+        Html::img('http://abc.com/3.jpg'),
     ],
-    'clientOptions'=>[
-        'loop'=>true,
+    'clientOptions' => [
+        'loop' => true,
     ]
 ]);
 ```
