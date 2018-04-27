@@ -1,0 +1,28 @@
+{
+    "name": "tangniyuqi/yii2-swiper",
+    "version": "1.0.0",
+    "description": "The swiper widget for the Yii framework",
+    "keywords": ["yii2", "widget", "swiper"],
+    "homepage": "https://github.com/tangniyuqi/yii2-swiper",
+    "type": "yii2-widget",
+    "language": "php",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "tangniyuqi",
+            "email": "tangniyuqi@163.com",
+            "homepage": "http://www.noooya.com/"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+	    "fxp/composer-asset-plugin": "*",
+	    "bower-asset/swiper": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "tangniyuqi\\swiper\\": ""
+        }
+    }
+}
