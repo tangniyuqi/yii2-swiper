@@ -19,8 +19,9 @@ use yii\web\View;
  * @see also http://idangero.us/swiper
  * <?=\tangniyuqi\swiper\Swiper::widget([
  *      'items' => [
- *          Html::img('http://img-src'),
- *          Html::img('http://img-src'),
+ *          Html::img('http://abc.com/1.jpg'),
+ *          Html::img('http://abc.com/2.jpg'),
+ *          Html::img('http://abc.com/3.jpg'),
  *      ],
  *      'jquery' => false,
  *      'clientOptions' => [
