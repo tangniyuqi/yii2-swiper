@@ -1,34 +1,83 @@
-# yii2-swiper
-The swiper slider widget for the Yii framework.
+Yii2 Swiper Widget
+==================
+Yii2 Swiper Widget
 
-See more here: http://idangero.us/swiper
-## Installation
+- 配置方便
 
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
+- 同一个界面可以存在多个轮播，且不冲突
 
-Either run
+- [swiper 4.0 +](http://idangero.us/swiper/)
 
-```bash
-$ php composer.phar require tangniyuqi/yii2-swiper
+安装
+------------
+
 ```
-
-or add
+php composer.phar require --prefer-dist tangniyuqi/yii2-swiper "*" -vvv
+```
 
 ```
 "tangniyuqi/yii2-swiper": "*"
 ```
 
-to the `require` section of your `composer.json` file.
-## Usage
+简单使用
+-----
+显示轮播
+
 ```php
+<?php
+use yii\helpers\Html;
+
 echo \tangniyuqi\swiper\Swiper::widget([
-    'items' => [
+    'slides' => [
         Html::img('http://abc.com/1.jpg'),
         Html::img('http://abc.com/2.jpg'),
         Html::img('http://abc.com/3.jpg'),
     ],
+    'pagination' => true,
+    'navigation' => true,
+    'scrollbar' => true,
     'clientOptions' => [
+        'speed' => 200,
         'loop' => true,
     ]
 ]);
+```
+
+高级使用
+-----
+自定义操控，自定义js
+
+```php
+<?php
+use yii\helpers\Html;
+
+// swiper js 初始化后赋值给的变量名
+$swiperEl = 'swiper';
+
+echo \tangniyuqi\swiper\Swiper::widget([
+    'slides' => [
+        Html::img('http://abc.com/1.jpg'),
+        Html::img('http://abc.com/2.jpg'),
+        Html::img('http://abc.com/3.jpg'),
+    ],
+    'pagination' => true,
+    'navigation' => true,
+    'scrollbar' => true,
+    'swiperEl' => $swiperEl, // 在此处传入
+    'clientOptions' => [
+        'speed' => 200,
+        'loop' => true,
+    ]
+]);
+
+// 下一个触发按钮
+echo Html::button('next', ['id' => 'to-next']);
+
+$js = <<<JS
+ // 点击之后触发下一个，更多js操作参考官方
+ $('#to-next').click(function() {
+   {$swiperEl}.slideNext();
+ });
+JS;
+$this->registerJs($js);
 ```
