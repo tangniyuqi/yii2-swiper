@@ -1,7 +1,5 @@
 Yii2 Swiper Widget
 ==================
-Yii2 Swiper Widget
-
 - 配置方便
 
 - 同一个界面可以存在多个轮播，且不冲突

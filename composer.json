@@ -17,7 +17,8 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-	    "npm-asset/swiper": "4.*"
+	    "fxp/composer-asset-plugin": "*",
+	    "bower-asset/swiper": "*"
     },
     "autoload": {
         "psr-4": {

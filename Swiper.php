@@ -11,99 +11,147 @@
  */
 namespace tangniyuqi\swiper;
 
+use yii\helpers\Html;
 use yii\helpers\Json;
-use yii\web\View;
+use yii\web\JsExpression;
+use yii\base\InvalidValueException;
 
-/**
- * swiper widget
- * @see also http://idangero.us/swiper
- * <?=\tangniyuqi\swiper\Swiper::widget([
- *      'items' => [
- *          Html::img('http://abc.com/1.jpg'),
- *          Html::img('http://abc.com/2.jpg'),
- *          Html::img('http://abc.com/3.jpg'),
- *      ],
- *      'jquery' => false,
- *      'clientOptions' => [
- *          'loop' => true,
- *      ]
- * ]);?>
- */
 class Swiper extends \yii\base\Widget
 {
     /**
-     * @inheritdoc
+     * 层的属性
+     * @var array
      */
-    public $items = [];
+    public $wrapOptions = [];
 
     /**
-     * @inheritdoc
+     * 图片是否显示最大宽度
+     * @var bool
      */
-    public $jquery = true;
+    public $slideImageFullWidth = true;
 
     /**
-     * @inheritdoc
+     * swiper js params
+     * @link http://idangero.us/swiper/api/
+     * @var array
      */
-    public $pagination = true;
+    public $clientOptions = [];
 
     /**
-     * @inheritdoc
+     * 轮播内容
+     * 例如：
+     * [
+     *      Html::img('http://img.zcool.cn/community/01665258173c34a84a0d304fc68fdf.jpg'),
+     *      Html::img('http://img.zcool.cn/community/01665258173c34a84a0d304fc68fdf.jpg'),
+     *      Html::img('http://img.zcool.cn/community/01665258173c34a84a0d304fc68fdf.jpg'),
+     * ]
+     * @var array
      */
-    public $navigation = true;
+    public $slides = [];
 
     /**
-     * @inheritdoc
+     * 分页器
+     * false：不显示
+     * true：使用默认值显示
+     * array：配置参数 @link http://idangero.us/swiper/api/#pagination
+     * @var bool|array
+     */
+    public $pagination = false;
+
+    /**
+     * 左右导航
+     * false：不显示
+     * true：使用默认值显示
+     * array：配置参数 @link http://idangero.us/swiper/api/#navigation
+     * @var bool|array
+     */
+    public $navigation = false;
+
+    /**
+     * 底部 scroll 导航
+     * false：不显示
+     * true：使用默认值显示
+     * array：配置参数 @link http://idangero.us/swiper/api/#scrollbar
+     * @var bool|array
      */
     public $scrollbar = false;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    public $options = [];
+    public $swiperEl;
 
     /**
      * @inheritdoc
      */
-    public $clientOptions = [];
+    private $_wrapContainerId;
+
+    /**
+     * @inheritdoc
+     */
+    private $_paginationId;
+
+    /**
+     * @inheritdoc
+     */
+    private $_navigationNextId;
+
+    /**
+     * @inheritdoc
+     */
+    private $_navigationPrevId;
+
+    /**
+     * @inheritdoc
+     */
+    private $_scrollbarId;
 
     /**
      * @inheritdoc
      */
     public function init()
     {
-        parent::init();
-
-        if (empty($this->items)) return null;
-
-        if (!isset($this->options['class'])) {
-            $this->options['class'] = 'swiper-container';
+        if (!$this->slides) {
+            throw new InvalidValueException('slides 必须');
         }
 
-        if (!isset($this->options['id'])) {
-            $this->options['id'] = $this->id;
-        }
+        $this->_wrapContainerId = $this->id . '-swiper-container';
 
         if ($this->pagination) {
-            $this->clientOptions['pagination'] = '.swiper-pagination';
+            if (!is_array($this->pagination)) {
+                $this->pagination = [];
+            }
+
+            $this->_paginationId = $this->id . '-swiper-pagination';
+            $this->pagination['el'] = '#' . $this->_paginationId;
+            $this->clientOptions['pagination'] = $this->pagination;
         }
 
         if ($this->navigation) {
-            $this->clientOptions['nextButton'] = '.swiper-button-next';
-            $this->clientOptions['prevButton'] = '.swiper-button-prev';
+            if (!is_array($this->navigation)) {
+                $this->navigation = [];
+            }
+
+            $this->_navigationNextId = $this->id . '-swiper-button-next';
+            $this->_navigationPrevId = $this->id . '-swiper-button-prev';
+            $this->navigation['nextEl'] = '#' . $this->_navigationNextId;
+            $this->navigation['prevEl'] = '#' . $this->_navigationPrevId;
+            $this->clientOptions['navigation'] = $this->navigation;
         }
 
         if ($this->scrollbar) {
-            $this->clientOptions['scrollbar'] = '.swiper-scrollbar';
+            if (!is_array($this->scrollbar)) {
+                $this->scrollbar = [];
+            }
+
+            $this->_scrollbarId = $this->id . '-swiper-scrollbar';
+            $this->scrollbar['el'] = '#' . $this->_scrollbarId;
+            $this->clientOptions['scrollbar'] = $this->scrollbar;
         }
 
-        $this->registerAsset();
-
-        $clientOptions = !empty($this->clientOptions)? Json::encode($this->clientOptions): '{}';
-        $clientObj = 'swiper'.ucwords($this->options['id']);
-        $js = "var {$clientObj}=new Swiper('#{$this->options['id']}', {$clientOptions})";
-
-        $position = $this->jquery? View::POS_READY: View::POS_END;
-        $this->view->registerJs($js, $position);
+        if (!$this->swiperEl) {
+            $this->swiperEl = $this->id . 'Swiper';
+        }
     }
 
     /**
@@ -111,16 +159,57 @@ class Swiper extends \yii\base\Widget
      */
     public function run()
     {
-        if (empty($this->items)) return null;
+        $containerContent = [];
+        $slideContent = [];
 
-        return $this->render('swiper');
+        foreach ($this->slides as $slide) {
+            $slideContent[] = Html::tag('div', $slide, ['class' => 'swiper-slide']);
+        }
+
+        $containerContent[] = Html::tag('div', implode("\n", $slideContent), ['class' => 'swiper-wrapper']);
+
+        if ($this->pagination) {
+            $containerContent[] = Html::tag('div', '', ['id' => $this->_paginationId, 'class' => 'swiper-pagination']);
+        }
+
+        if ($this->navigation) {
+            $containerContent[] = Html::tag('div', '', ['id' => $this->_navigationPrevId, 'class' => 'swiper-button-prev']);
+            $containerContent[] = Html::tag('div', '', ['id' => $this->_navigationNextId, 'class' => 'swiper-button-next']);
+        }
+
+        if ($this->scrollbar) {
+            $containerContent[] = Html::tag('div', '', ['id' => $this->_scrollbarId, 'class' => 'swiper-scrollbar']);
+        }
+        Html::addCssClass($this->wrapOptions, 'swiper-container');
+
+        $html = Html::tag('div', implode("\n", $containerContent), array_merge($this->wrapOptions, [
+            'id' => $this->_wrapContainerId,
+        ]));
+
+        echo $html;
+
+        $this->registerAssets();
     }
-
     /**
-     * @inheritdoc
+     * 注册资源
      */
-    public function registerAsset()
+    protected function registerAssets()
     {
-        $this->jquery? SwiperJqueryAsset::register($this->view): SwiperAsset::register($this->view);
+        SwiperAsset::register($this->view);
+
+        if ($this->slideImageFullWidth) {
+            $css = <<<CSS
+        #{$this->_wrapContainerId} img {
+            width: 100%;
+        }
+CSS;
+            $this->view->registerCss($css);
+        }
+
+        $clientOptions = Json::encode2($this->clientOptions);
+
+        $js = new JsExpression("var {$this->swiperEl} = new Swiper('#{$this->_wrapContainerId}', {$clientOptions})");
+
+        $this->view->registerJs($js);
     }
 }
