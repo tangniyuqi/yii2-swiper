@@ -206,7 +206,7 @@ CSS;
             $this->view->registerCss($css);
         }
 
-        $clientOptions = Json::encode2($this->clientOptions);
+        $clientOptions = Json::encode($this->clientOptions);
 
         $js = new JsExpression("var {$this->swiperEl} = new Swiper('#{$this->_wrapContainerId}', {$clientOptions})");
 
