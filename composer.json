@@ -17,7 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-	    "npm-asset/swiper": "4.*"
+        "npm-asset/swiper": "4.*"
     },
     "autoload": {
         "psr-4": {
