@@ -49,7 +49,7 @@ echo \tangniyuqi\swiper\Swiper::widget([
 <?php
 use yii\helpers\Html;
 
-// swiper js 初始化后赋值给的变量名
+//swiper js 初始化后赋值给的变量名
 $swiperEl = 'swiper';
 
 echo \tangniyuqi\swiper\Swiper::widget([
@@ -68,14 +68,15 @@ echo \tangniyuqi\swiper\Swiper::widget([
     ]
 ]);
 
-// 下一个触发按钮
+//下一个触发按钮
 echo Html::button('next', ['id' => 'to-next']);
 
 $js = <<<JS
- // 点击之后触发下一个，更多js操作参考官方
- $('#to-next').click(function() {
-   {$swiperEl}.slideNext();
- });
+  //点击之后触发下一个，更多js操作参考官方
+  $('#to-next').click(function() {
+    {$swiperEl}.slideNext();
+  });
 JS;
+
 $this->registerJs($js);
 ```
